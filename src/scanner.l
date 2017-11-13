@@ -6,20 +6,21 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "symbols.h"
 
 #define MAXLENGTH 16
 
-typedef union {
+#include "y.tab.h"
+
+/*typedef union {
     int num;
     char ident[MAXLENGTH+1];
-} token;
+} token;*/
 
 /*
  * yylval という変数名にするのは，yacc との融合時にプログラムの変更を
  * 最小限にするためである．
  */
-token yylval; 
+//token yylval; 
  
 %}
 %option yylineno
@@ -105,7 +106,7 @@ main(int argc, char *argv[]) {
      * yylex() の戻り値は，上のアクション部で定義した戻り値である．
      * yytext には，切り出されたトークンが文字列として格納されている．
      */
-    while (tok = yylex()) {
+    /*while (tok = yylex()) {
         switch (tok) {
         case NUMBER:
             printf("\"%s\":\t%d\t%d\n", yytext, tok, yylval.num);
@@ -119,5 +120,6 @@ main(int argc, char *argv[]) {
             printf("\"%s\":\t%d\tRESERVE\n", yytext, tok);
             break;
         }
-    }
+    }*/
+    yyparse();
 }
