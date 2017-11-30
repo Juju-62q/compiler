@@ -1,27 +1,26 @@
 #include "stack.h"
 
 static char* getKindString(enum kindOfItem kind);
-static void removeItem(tableItem *targetItem);
+static void removeItem();
 
 /*declation of Stack Items*/
 static tableItem *stackPointer;
 static int globalNum = 0;
 static int localNum = 0;
 
-int main(){
+/*int main(){
   initializeStack();
   addItemToStack("test1",local);
   addItemToStack("test2",global);
   addItemToStack("test3",func);
   addItemToStack("local1",local);
-  addItemToStack("global1",global);
   addItemToStack("local2",local);
   printAllItems();
   //tableItem *item = searchItem("test1");
   printf("-----------------------------------\n");
   removeLocalVariable();
   printAllItems();
-}
+}*/
 
 void initializeStack(){
 
@@ -80,25 +79,18 @@ void removeLocalVariable(){
   }
 }
 
-static void removeItem(tableItem *targetItem){
+static void removeItem(){
   tableItem *item;
-  tableItem *prev = targetItem -> prev;
-  if(targetItem == stackPointer){
-    free(targetItem -> name);
-    free(targetItem);
-    stackPointer = prev;
-  }else{
-    for(item = stackPointer ; item -> prev != targetItem ; item = item -> prev);
-    free(targetItem -> name);
-    free(targetItem);
-    item -> prev = prev;
-  }
+  tableItem *prev = stackPointer -> prev;
+  free(stackPointer -> name);
+  free(stackPointer);
+  stackPointer = prev;
 }
 
 tableItem* searchItem(char *name){
   tableItem *item;
   for(item = stackPointer ; item -> kind != sentinel ; item = item -> prev){
-     if(strcmp(item -> name, name)) return item;
+     if(!(strcmp(item -> name, name))) return item;
   }
   return NULL;
 }

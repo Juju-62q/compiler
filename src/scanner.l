@@ -4,12 +4,11 @@
  * 
  */
 
-#include <stdio.h>
-#include <string.h>
 
 #define MAXLENGTH 16
 
 #include "y.tab.h"
+#include "stack.h"
 
 /*typedef union {
     int num;
@@ -95,6 +94,9 @@ main(int argc, char *argv[]) {
         fprintf(stderr, "cannot open file: %s\n", argv[1]);
         exit(1);
     }
+
+    /*initialize stack*/
+    initializeStack();
 
     /*
      * yyin は lex の内部変数であり，入力のファイルポインタを表す．

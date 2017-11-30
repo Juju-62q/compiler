@@ -3,15 +3,18 @@ YACC = yacc -d -v
 LEX = lex
 
 parser: y.tab.o lex.yy.o
-	$(CC) -o parser y.tab.o lex.yy.o -lfl
+	$(CC) -o parser y.tab.o lex.yy.o stack.o -ll
 
-y.tab.o: parser.y
+y.tab.o: parser.y stack.o
 	$(YACC) parser.y
-	$(CC) y.tab.c -c -lfl
+	$(CC) y.tab.c -c -ll
 
-lex.yy.o: scanner.l y.tab.h
+lex.yy.o: scanner.l y.tab.h stack.o
 	$(LEX) scanner.l
-	$(CC) lex.yy.c -c -lfl
+	$(CC) lex.yy.c -c -ll
+
+stack.o: stack.c stack.h
+	$(CC) stack.c -c
 
 clean:
 	rm -f *.o lex.yy.c y.tab.c y.tab.h

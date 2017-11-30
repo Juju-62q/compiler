@@ -5,10 +5,11 @@
 
 #define MAXLENGTH 16
 
-#include <stdio.h>
+#include "stack.h"
 
 extern int yylineno;
 extern char* yytext;
+static enum kindOfItem kind = global;
 
 %}
 
@@ -36,6 +37,8 @@ extern char* yytext;
 
 program
         : PROGRAM IDENT SEMICOLON outblock PERIOD
+        {printf("program end\n");
+        printAllItems();}
         ;
 
 outblock
@@ -72,10 +75,18 @@ subprog_decl
 
 proc_decl 
         : PROCEDURE proc_name SEMICOLON inblock
+        {kind = global;
+        removeLocalVariable();
+        printf("proc_decl\n");
+        printAllItems();}
         ;
 
 proc_name 
         : IDENT
+        {kind = local;
+        addItemToStack($1,func);
+        printf("proc_name\n");
+        printAllItems();}
         ;
 
 inblock
@@ -101,6 +112,9 @@ statement
 
 assignment_statement
         : IDENT ASSIGN expression
+        {tableItem *item;
+        item = searchItem($1);
+        printf("assign search %s name:%s type:%d addr:%d\n",$1,item -> name, item -> kind, item -> addr);}
         ;
 
 if_statement
@@ -118,6 +132,10 @@ while_statement
 
 for_statement
         : FOR IDENT ASSIGN expression TO expression DO statement
+        {tableItem *item;
+        item = searchItem($2);
+        printf("for_statement search %s name:%s type:%d addr:%d\n",$2,item -> name, item -> kind, item -> addr);}
+        ;
         ;
 
 proc_call_statement
@@ -126,6 +144,10 @@ proc_call_statement
 
 proc_call_name
         : IDENT
+        {tableItem *item;
+        item = searchItem($1);
+        printf("proc_call_name search %s name:%s type:%d addr:%d\n",$1,item -> name, item -> kind, item -> addr);}
+        ;
         ;
 
 block_statement
@@ -134,6 +156,10 @@ block_statement
 
 read_statement
         : READ LPAREN IDENT RPAREN
+        {tableItem *item;
+        item = searchItem($3);
+        printf("read_statement search %s name:%s type:%d addr:%d\n",$3,item -> name, item -> kind, item -> addr);}
+        ;
         ;
 
 write_statement
@@ -175,6 +201,9 @@ factor
 
 var_name
         : IDENT
+        {tableItem *item;
+        item = searchItem($1);
+        printf("var_name search %s name:%s type:%d addr:%d\n",$1,item -> name, item -> kind, item -> addr);}
         ;
 
 arg_list
@@ -184,7 +213,14 @@ arg_list
 
 id_list
         : IDENT
+        {addItemToStack($1,kind);
+        printf("id_list\n");
+        printAllItems();}
         | id_list COMMA IDENT
+        {addItemToStack($3,kind);
+        printf("id_list\n");
+        printAllItems();}
+        ;
 
 %% 
 yyerror(char *s)
