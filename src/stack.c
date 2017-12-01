@@ -61,7 +61,7 @@ void addItemToStack(char *name, enum kindOfItem kind){
   /*set information about new item*/
   tableItem *newItem;
   newItem = (tableItem*)malloc(sizeof(tableItem));
-  newItem -> name = (char*)malloc(sizeof(name));
+  newItem -> name = (char*)malloc(strlen(name));
   sprintf(newItem -> name, "%s", name);
   newItem -> addr = (kind == local)? localNum++ : globalNum++;
   newItem -> kind = kind;
