@@ -77,7 +77,7 @@ proc_decl
         : PROCEDURE proc_name SEMICOLON inblock
         {kind = global;
         removeLocalVariable();
-        printf("proc_decl\n");
+        printf("removeing Items\n");
         printAllItems();}
         ;
 
@@ -85,7 +85,7 @@ proc_name
         : IDENT
         {kind = local;
         addItemToStack($1,func);
-        printf("proc_name\n");
+        printf("procedure declaration\n");
         printAllItems();}
         ;
 
@@ -113,8 +113,7 @@ statement
 assignment_statement
         : IDENT ASSIGN expression
         {tableItem *item;
-        item = searchItem($1);
-        printf("assign search %s name:%s type:%d addr:%d\n",$1,item -> name, item -> kind, item -> addr);}
+        item = searchItem($1);}
         ;
 
 if_statement
@@ -133,9 +132,7 @@ while_statement
 for_statement
         : FOR IDENT ASSIGN expression TO expression DO statement
         {tableItem *item;
-        item = searchItem($2);
-        printf("for_statement search %s name:%s type:%d addr:%d\n",$2,item -> name, item -> kind, item -> addr);}
-        ;
+        item = searchItem($2);}
         ;
 
 proc_call_statement
@@ -145,9 +142,7 @@ proc_call_statement
 proc_call_name
         : IDENT
         {tableItem *item;
-        item = searchItem($1);
-        printf("proc_call_name search %s name:%s type:%d addr:%d\n",$1,item -> name, item -> kind, item -> addr);}
-        ;
+        item = searchItem($1);}
         ;
 
 block_statement
@@ -157,9 +152,7 @@ block_statement
 read_statement
         : READ LPAREN IDENT RPAREN
         {tableItem *item;
-        item = searchItem($3);
-        printf("read_statement search %s name:%s type:%d addr:%d\n",$3,item -> name, item -> kind, item -> addr);}
-        ;
+        item = searchItem($3);}
         ;
 
 write_statement
@@ -202,8 +195,7 @@ factor
 var_name
         : IDENT
         {tableItem *item;
-        item = searchItem($1);
-        printf("var_name search %s name:%s type:%d addr:%d\n",$1,item -> name, item -> kind, item -> addr);}
+        item = searchItem($1);}
         ;
 
 arg_list
@@ -214,11 +206,11 @@ arg_list
 id_list
         : IDENT
         {addItemToStack($1,kind);
-        printf("id_list\n");
+        printf("variable declaration\n");
         printAllItems();}
         | id_list COMMA IDENT
         {addItemToStack($3,kind);
-        printf("id_list\n");
+        printf("variable declaration\n");
         printAllItems();}
         ;
 

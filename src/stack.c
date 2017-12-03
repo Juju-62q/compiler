@@ -8,20 +8,6 @@ static tableItem *stackPointer;
 static int globalNum = 0;
 static int localNum = 0;
 
-/*int main(){
-  initializeStack();
-  addItemToStack("test1",local);
-  addItemToStack("test2",global);
-  addItemToStack("test3",func);
-  addItemToStack("local1",local);
-  addItemToStack("local2",local);
-  printAllItems();
-  //tableItem *item = searchItem("test1");
-  printf("-----------------------------------\n");
-  removeLocalVariable();
-  printAllItems();
-}*/
-
 void initializeStack(){
 
   /*setting sentinel*/
@@ -90,7 +76,11 @@ static void removeItem(){
 tableItem* searchItem(char *name){
   tableItem *item;
   for(item = stackPointer ; item -> kind != sentinel ; item = item -> prev){
-     if(!(strcmp(item -> name, name))) return item;
+    if(!strcmp(item -> name, name)){
+      printf("lookup (%s) -> addr : %d,type : %s\n", name, item->addr, getKindString(item->kind));
+      return item;
+    }
   }
+  printf("lookup (%s) -> not found\n", name);
   return NULL;
 }
