@@ -2,14 +2,14 @@ CC = gcc
 YACC = yacc -d -v
 LEX = lex
 
-parser: y.tab.o lex.yy.o
+parser: y.tab.o lex.yy.o stack.o
 	$(CC) -o parser y.tab.o lex.yy.o stack.o -lfl
 
-y.tab.o: parser.y stack.o
+y.tab.o: parser.y
 	$(YACC) parser.y
 	$(CC) y.tab.c -c -lfl
 
-lex.yy.o: scanner.l y.tab.h stack.o
+lex.yy.o: scanner.l y.tab.h
 	$(LEX) scanner.l
 	$(CC) lex.yy.c -c -lfl
 
