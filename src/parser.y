@@ -6,6 +6,8 @@
 #define MAXLENGTH 16
 
 #include "stack.h"
+#include "code.h"
+#include "optype.h"
 
 extern int yylineno;
 extern char* yytext;
@@ -37,8 +39,10 @@ static enum kindOfItem kind = global;
 
 program
         : PROGRAM IDENT SEMICOLON outblock PERIOD
-        {printf("program end\n");
-        printAllItems();}
+        {
+          printf("program end\n");
+          printAllItems();
+        }
         ;
 
 outblock
@@ -75,18 +79,22 @@ subprog_decl
 
 proc_decl 
         : PROCEDURE proc_name SEMICOLON inblock
-        {kind = global;
-        removeLocalVariable();
-        printf("removeing Items\n");
-        printAllItems();}
+        {
+          kind = global;
+          removeLocalVariable();
+          printf("removeing Items\n");
+          printAllItems();
+        }
         ;
 
 proc_name 
         : IDENT
-        {kind = local;
-        addItemToStack($1,func);
-        printf("procedure declaration\n");
-        printAllItems();}
+        {
+          kind = local;
+          addItemToStack($1,func);
+          printf("procedure declaration\n");
+          printAllItems();
+        }
         ;
 
 inblock
@@ -112,8 +120,11 @@ statement
 
 assignment_statement
         : IDENT ASSIGN expression
-        {tableItem *item;
-        item = searchItem($1);}
+        {
+          tableItem *item;
+          item = searchItem($1);
+          generateOperation(STO, 0, 0, item -> addr);
+        }
         ;
 
 if_statement
@@ -131,8 +142,10 @@ while_statement
 
 for_statement
         : FOR IDENT ASSIGN expression TO expression DO statement
-        {tableItem *item;
-        item = searchItem($2);}
+        {
+          tableItem *item;
+          item = searchItem($2);
+        }
         ;
 
 proc_call_statement
@@ -141,8 +154,10 @@ proc_call_statement
 
 proc_call_name
         : IDENT
-        {tableItem *item;
-        item = searchItem($1);}
+        {
+          tableItem *item;
+          item = searchItem($1);
+        }
         ;
 
 block_statement
@@ -151,8 +166,10 @@ block_statement
 
 read_statement
         : READ LPAREN IDENT RPAREN
-        {tableItem *item;
-        item = searchItem($3);}
+        {
+          tableItem *item;
+          item = searchItem($3);
+        }
         ;
 
 write_statement
@@ -176,8 +193,17 @@ expression
         : term
         | PLUS term
         | MINUS term
+        {
+          generateOperation(OPR, 0, 0, 0);
+        }
         | expression PLUS term
+        {
+          generateOperation(OPR, 0, 0, 1);
+        }
         | expression MINUS term
+        {
+          generateOperation(OPR, 0, 0, 2);
+        }
         ;
 
 term
@@ -189,13 +215,19 @@ term
 factor
         : var_name
         | NUMBER
+        {
+          generateOperation(LIT,0,0,$1);
+        }
         | LPAREN expression RPAREN
         ;
 
 var_name
         : IDENT
-        {tableItem *item;
-        item = searchItem($1);}
+        {
+          tableItem *item;
+          item = searchItem($1);
+          generateOperation(LOD, 0, 0, item -> addr);
+        }
         ;
 
 arg_list
@@ -205,13 +237,19 @@ arg_list
 
 id_list
         : IDENT
-        {addItemToStack($1,kind);
-        printf("variable declaration\n");
-        printAllItems();}
+        {
+          addItemToStack($1,kind);
+          printf("variable declaration\n");
+          printAllItems();
+          generateOperation(LIT,0,0,0);
+        }
         | id_list COMMA IDENT
-        {addItemToStack($3,kind);
-        printf("variable declaration\n");
-        printAllItems();}
+        {
+          addItemToStack($3,kind);
+          printf("variable declaration\n");
+          printAllItems();
+          generateOperation(LIT,0,0,0);
+        }
         ;
 
 %% 

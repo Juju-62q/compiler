@@ -9,6 +9,7 @@
 
 #include "y.tab.h"
 #include "stack.h"
+#include "optype.h"
 
 /*typedef union {
     int num;
@@ -98,30 +99,18 @@ main(int argc, char *argv[]) {
     /*initialize stack*/
     initializeStack();
 
+    /*initialize output file*/
+    if(initializeOutputFile() == -1){
+        fprintf(stderr, "cannot make output file\n");
+        exit(1);
+    }
+
     /*
      * yyin は lex の内部変数であり，入力のファイルポインタを表す．
      */
     yyin = fp;
 
-    /*
-     * yylex() を呼び出すことにより，トークンが一つ切り出される．
-     * yylex() の戻り値は，上のアクション部で定義した戻り値である．
-     * yytext には，切り出されたトークンが文字列として格納されている．
-     */
-    /*while (tok = yylex()) {
-        switch (tok) {
-        case NUMBER:
-            printf("\"%s\":\t%d\t%d\n", yytext, tok, yylval.num);
-            break;
-
-        case IDENT:
-            printf("\"%s\":\t%d\t%s\n", yytext, tok, yylval.ident);
-            break;
-
-        default:
-            printf("\"%s\":\t%d\tRESERVE\n", yytext, tok);
-            break;
-        }
-    }*/
     yyparse();
+
+    closeOutputFile();
 }

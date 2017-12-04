@@ -52,6 +52,10 @@ void addItemToStack(char *name, enum kindOfItem kind){
   newItem -> addr = (kind == local)? localNum++ : globalNum++;
   newItem -> kind = kind;
   newItem -> prev = stackPointer;
+
+  if(kind == func){
+    localNum = 0;
+  }
   
   /*set stackPointer*/
   stackPointer = newItem;
@@ -77,6 +81,7 @@ tableItem* searchItem(char *name){
   tableItem *item;
   for(item = stackPointer ; item -> kind != sentinel ; item = item -> prev){
     if(!strcmp(item -> name, name)){
+      if(item -> kind == func) localNum = 0;
       printf("lookup (%s) -> addr : %d,type : %s\n", name, item->addr, getKindString(item->kind));
       return item;
     }
