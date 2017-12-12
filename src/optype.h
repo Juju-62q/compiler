@@ -26,6 +26,14 @@ struct op{
 
 typedef struct op op;
 
+struct undefinedOp{
+  op *opFromList;
+  struct undefinedOp *prev;
+};
+
+typedef struct undefinedOp undefinedOp;
+
 int initializeOutputFile();
 void writeExecuteFile();
 void generateOperation(int opCode, REG baseReg, REG indexReg, int address);
+void setUndefinedAddress();

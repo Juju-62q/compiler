@@ -5,21 +5,22 @@
 
 #define OUTPUT_FILE "result.code"
 static FILE *outputFile;
+
 static op *opList;
 static op *opListTail;
-static op *undefinedOpList;
-static op *undefinedOpListTail;
+static unsigned int opCount = 0;
+
+static undefinedOp *undefinedOpList;
 
 int initializeOutputFile(){
   if((outputFile = fopen(OUTPUT_FILE, "wb")) == NULL)
     return -1;
-  op *sentinelOp;
-  sentinelOp = (op*)malloc(sizeof(op));
+  op *sentinelOp = (op*)malloc(sizeof(op));
   sentinelOp -> next = NULL;
   opList = sentinelOp;
   opListTail = sentinelOp;
-  undefinedOpList = sentinelOp;
-  undefinedOpListTail = sentinelOp;
+
+  undefinedOpList = NULL;
   return 0;
 }
 
@@ -33,6 +34,7 @@ void writeExecuteFile(){
 }
 
 void generateOperation(int opCode, REG baseReg, REG indexReg, int address ){
+  ++opCount;
   op *newOp = (op*)malloc(sizeof(op));
   newOp -> opCode.opcode = opCode;
   newOp -> opCode.basereg = baseReg;
@@ -41,10 +43,19 @@ void generateOperation(int opCode, REG baseReg, REG indexReg, int address ){
   newOp -> next = NULL;
 
   if(opCode == JMP || opCode == JPC){
-    undefinedOpListTail -> next = newOp;
-    newOp = undefinedOpListTail;
+    undefinedOp *newUndefinedOp = (undefinedOp*)malloc(sizeof(undefinedOp));
+    newUndefinedOp -> prev = undefinedOpList;
+    newUndefinedOp -> opFromList = newOp;
+    undefinedOpList = newUndefinedOp;
   }
 
   opListTail -> next = newOp;
   newOp = opListTail;
+}
+
+void setUndefinedAddress(){
+  undefinedOp *tmp = undefinedOpList;
+  undefinedOpList -> opFromList -> opCode.address = opCount + 1;
+  undefinedOpList = undefinedOpList -> prev;
+  free(tmp);
 }
