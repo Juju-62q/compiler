@@ -112,5 +112,5 @@ main(int argc, char *argv[]) {
 
     yyparse();
 
-    closeOutputFile();
+    writeExecuteFile();
 }

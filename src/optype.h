@@ -19,6 +19,13 @@ typedef struct {
     REG address;
 } OPCODE;
 
+struct op{
+  OPCODE opCode;
+  struct op *next;
+};
+
+typedef struct op op;
+
 int initializeOutputFile();
-void closeOutputFile();
+void writeExecuteFile();
 void generateOperation(int opCode, REG baseReg, REG indexReg, int address);
