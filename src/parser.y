@@ -12,6 +12,7 @@
 extern int yylineno;
 extern char* yytext;
 static enum kindOfItem kind = global;
+static int procFlag = 1;
 
 %}
 
@@ -40,6 +41,8 @@ static enum kindOfItem kind = global;
 program
         : PROGRAM IDENT SEMICOLON outblock PERIOD
         {
+          printf("%d\n",getStartPoint());
+          if(!procFlag) setUndefinedAddress(getStartPoint());
           printf("program end\n");
           printAllItems();
         }
@@ -94,11 +97,18 @@ proc_name
           addItemToStack($1,func);
           printf("procedure declaration\n");
           printAllItems();
+          if(procFlag){
+            procFlag = 0;
+            generateOperation(JMP,0,0,0);
+          }
         }
         ;
 
 inblock
         : var_decl_part statement
+        {
+          generateOperation(RTN, 0, 0, 0);
+        }
         ;
 
 statement_list
@@ -157,6 +167,7 @@ proc_call_name
         {
           tableItem *item;
           item = searchItem($1);
+          generateOperation(CAL, 0, 0, item -> addr);
         }
         ;
 

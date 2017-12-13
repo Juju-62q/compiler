@@ -9,6 +9,7 @@ static FILE *outputFile;
 static op *opList;
 static op *opListTail;
 static unsigned int opCount = 0;
+static unsigned int startPoint = 0;
 
 static undefinedOp *undefinedOpList;
 
@@ -49,13 +50,26 @@ void generateOperation(int opCode, REG baseReg, REG indexReg, int address ){
     undefinedOpList = newUndefinedOp;
   }
 
+  if(opCode == RTN){
+     startPoint = opCount;
+     printf("startPoint = %d\n",startPoint);
+  }
+
   opListTail -> next = newOp;
-  newOp = opListTail;
+  opListTail = newOp;
 }
 
-void setUndefinedAddress(){
+void setUndefinedAddress(unsigned int address){
   undefinedOp *tmp = undefinedOpList;
-  undefinedOpList -> opFromList -> opCode.address = opCount + 1;
+  undefinedOpList -> opFromList -> opCode.address = address;
   undefinedOpList = undefinedOpList -> prev;
   free(tmp);
+}
+
+unsigned int getOpCount(){
+  return opCount;
+}
+
+unsigned int getStartPoint(){
+  return startPoint;
 }

@@ -16,9 +16,6 @@ lex.yy.o: scanner.l y.tab.h stack.h optype.h
 stack.o: stack.c stack.h
 	$(CC) stack.c -c
 
-codeview.c: codeview.c code.h optype.h
-	$(CC) codeview.c -c
-
 clean:
 	rm -f *.o lex.yy.c y.tab.c y.tab.h y.output
 

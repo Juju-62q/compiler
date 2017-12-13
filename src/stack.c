@@ -1,4 +1,5 @@
 #include "stack.h"
+#include "optype.h"
 
 static char* getKindString(enum kindOfItem kind);
 static void removeItem();
@@ -49,7 +50,10 @@ void addItemToStack(char *name, enum kindOfItem kind){
   newItem = (tableItem*)malloc(sizeof(tableItem));
   newItem -> name = (char*)malloc(strlen(name));
   sprintf(newItem -> name, "%s", name);
-  newItem -> addr = (kind == local)? localNum++ : globalNum++;
+  if(kind == func)
+    newItem -> addr = getOpCount() + 1;
+  else    
+    newItem -> addr = (kind == local)? localNum++ : globalNum++;
   newItem -> kind = kind;
   newItem -> prev = stackPointer;
 
