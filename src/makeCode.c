@@ -10,6 +10,7 @@ static op *opList;
 static op *opListTail;
 static REG opCount = 0;
 static REG startPoint = 0;
+static REG loopPoint = 0;
 
 static undefinedOp *undefinedOpList;
 
@@ -71,4 +72,12 @@ REG getOpCount(){
 
 REG getStartPoint(){
   return startPoint;
+}
+
+void setLoopPoint(){
+  loopPoint = opCount;
+}
+
+REG getLoopPoint(){
+  return loopPoint;
 }

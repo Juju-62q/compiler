@@ -39,3 +39,5 @@ void generateOperation(int opCode, REG baseReg, REG indexReg, REG address);
 void setUndefinedAddress(REG address);
 REG getOpCount();
 REG getStartPoint();
+void setLoopPoint();
+REG getLoopPoint();

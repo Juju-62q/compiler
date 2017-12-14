@@ -30,7 +30,7 @@ begin           return SBEGIN;
 div             return DIV;
 do              return DO;
 else            return ELSE;
-end            return SEND;
+end             return SEND;
 for             return FOR;
 forward         return FORWARD;
 function        return FUNCTION;

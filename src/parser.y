@@ -159,12 +159,21 @@ set_address_else
           setUndefinedAddress(getOpCount());
         }
 
+
 while_statement
-        : WHILE condition DO statement
+        : WHILE set_while_loop condition DO statement
         {
-          setUndefinedAddress(getOpCount());
+          setUndefinedAddress(getOpCount() + 1);
+          generateOperation(JMP, 0, 0, 0);
+          setUndefinedAddress(getLoopPoint());
         }
         ;
+
+set_while_loop
+        :
+        {
+          setLoopPoint();
+        }
 
 for_statement
         : FOR IDENT ASSIGN expression TO expression DO statement
@@ -219,32 +228,32 @@ null_statement
 condition
         : expression EQ expression
         {
-          generateOperation(OPR, 0, 0, 6);
+          generateOperation(OPR, 0, 0, 5);
           generateOperation(JPC, 0, 0, 0);
         }
         | expression NEQ expression
         {
-          generateOperation(OPR, 0, 0, 5);
+          generateOperation(OPR, 0, 0, 6);
           generateOperation(JPC, 0, 0, 0);
         }
         | expression LT expression
         {
-          generateOperation(OPR, 0, 0, 10);
+          generateOperation(OPR, 0, 0, 7);
           generateOperation(JPC, 0, 0, 0);
         }
         | expression LE expression
         {
-          generateOperation(OPR, 0, 0, 9);
+          generateOperation(OPR, 0, 0, 8);
           generateOperation(JPC, 0, 0, 0);
         }
         | expression GT expression
         {
-          generateOperation(OPR, 0, 0, 8);
+          generateOperation(OPR, 0, 0, 9);
           generateOperation(JPC, 0, 0, 0);
         }
         | expression GE expression
         {
-          generateOperation(OPR, 0, 0, 7);
+          generateOperation(OPR, 0, 0, 10);
           generateOperation(JPC, 0, 0, 0);
         }
         ;
@@ -269,7 +278,13 @@ expression
 term
         : factor
         | term MULT factor
+        {
+          generateOperation(OPR, 0 ,0 ,3);
+        }
         | term DIV factor
+        {
+          generateOperation(OPR, 0 ,0 ,4);
+        }
         ;
 
 factor
