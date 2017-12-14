@@ -50,17 +50,15 @@ void addItemToStack(char *name, enum kindOfItem kind){
   newItem = (tableItem*)malloc(sizeof(tableItem));
   newItem -> name = (char*)malloc(strlen(name));
   sprintf(newItem -> name, "%s", name);
-  if(kind == func)
+  if(kind == func){
+    localNum = 0;
     newItem -> addr = getOpCount() + 1;
-  else    
+  }else{    
     newItem -> addr = (kind == local)? localNum++ : globalNum++;
+  }
   newItem -> kind = kind;
   newItem -> prev = stackPointer;
 
-  if(kind == func){
-    localNum = 0;
-  }
-  
   /*set stackPointer*/
   stackPointer = newItem;
 }

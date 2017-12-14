@@ -172,8 +172,8 @@ for_statement
           tableItem *item;
           item = searchItem($2);
           REG base = item -> kind == local ? 1 : 0;
-          generateOperation(LOD, 0, 0, item -> address);
-          generateOperation(STO, base, 0, item -> address);
+          //generateOperation(LOD, 0, 0, item -> address);
+          //generateOperation(STO, base, 0, item -> address);
         }
         ;
 
@@ -199,11 +199,17 @@ read_statement
         {
           tableItem *item;
           item = searchItem($3);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(GET, 0, 0, 0);
+          generateOperation(STO, base, 0, item -> addr);
         }
         ;
 
 write_statement
         : WRITE LPAREN expression RPAREN
+        {
+          generateOperation(PUT, 0, 0, 0);
+        }
         ;
 
 null_statement
