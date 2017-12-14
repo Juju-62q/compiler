@@ -181,6 +181,7 @@ for_statement
           tableItem *item;
           item = searchItem($2);
           REG base = item -> kind == local ? 1 : 0;
+          //setLoop
           //generateOperation(LOD, 0, 0, item -> address);
           //generateOperation(STO, base, 0, item -> address);
         }

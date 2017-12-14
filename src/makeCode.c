@@ -10,9 +10,10 @@ static op *opList;
 static op *opListTail;
 static REG opCount = 0;
 static REG startPoint = 0;
-static REG loopPoint = 0;
 
-static undefinedOp *undefinedOpList;
+static loopPoint *loopPointList = NULL;
+
+static undefinedOp *undefinedOpList = NULL;
 
 int initializeOutputFile(){
   if((outputFile = fopen(OUTPUT_FILE, "wb")) == NULL)
@@ -75,9 +76,16 @@ REG getStartPoint(){
 }
 
 void setLoopPoint(){
-  loopPoint = opCount;
+  loopPoint *newLoopPoint = (loopPoint*)malloc(sizeof(loopPoint));
+  newLoopPoint -> prev = loopPointList;
+  newLoopPoint -> loopPoint = opCount;
+  loopPointList = newLoopPoint;
 }
 
 REG getLoopPoint(){
-  return loopPoint;
+  REG retLoopPoint = loopPointList -> loopPoint;
+  loopPoint *deleteLoopPoint = loopPointList;
+  loopPointList = loopPointList -> prev;
+  free(loopPointList);
+  return retLoopPoint;
 }

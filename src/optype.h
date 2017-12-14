@@ -33,6 +33,13 @@ struct undefinedOp{
 
 typedef struct undefinedOp undefinedOp;
 
+struct loopPoint{
+  REG *loopPoint;
+  struct loopPoint *prev;
+};
+
+typedef struct loopPoint loopPoint;
+
 int initializeOutputFile();
 void writeExecuteFile();
 void generateOperation(int opCode, REG baseReg, REG indexReg, REG address);
