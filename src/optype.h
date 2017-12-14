@@ -35,7 +35,7 @@ typedef struct undefinedOp undefinedOp;
 
 int initializeOutputFile();
 void writeExecuteFile();
-void generateOperation(int opCode, REG baseReg, REG indexReg, int address);
-void setUndefinedAddress();
-unsigned int getOpCount();
-unsigned int getStartPoint();
+void generateOperation(int opCode, REG baseReg, REG indexReg, REG address);
+void setUndefinedAddress(REG address);
+REG getOpCount();
+REG getStartPoint();

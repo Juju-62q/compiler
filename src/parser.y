@@ -41,7 +41,6 @@ static int procFlag = 1;
 program
         : PROGRAM IDENT SEMICOLON outblock PERIOD
         {
-          printf("%d\n",getStartPoint());
           if(!procFlag) setUndefinedAddress(getStartPoint());
           printf("program end\n");
           printAllItems();
@@ -133,21 +132,38 @@ assignment_statement
         {
           tableItem *item;
           item = searchItem($1);
-          generateOperation(STO, 0, 0, item -> addr);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(STO, base, 0, item -> addr);
         }
         ;
 
 if_statement
-        : IF condition THEN statement else_statement
+        : IF condition THEN statement set_address_if else_statement set_address_else
         ;
 
+set_address_if
+        : 
+        {
+          setUndefinedAddress(getOpCount());
+          generateOperation(JMP, 0, 0, 0);
+        }
+          
 else_statement
         : ELSE statement
         | /* empty */
         ;
 
+set_address_else
+        :
+        {
+          setUndefinedAddress(getOpCount());
+        }
+
 while_statement
         : WHILE condition DO statement
+        {
+          setUndefinedAddress(getOpCount());
+        }
         ;
 
 for_statement
@@ -155,6 +171,9 @@ for_statement
         {
           tableItem *item;
           item = searchItem($2);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(LOD, 0, 0, item -> address);
+          generateOperation(STO, base, 0, item -> address);
         }
         ;
 
@@ -193,11 +212,35 @@ null_statement
 
 condition
         : expression EQ expression
+        {
+          generateOperation(OPR, 0, 0, 6);
+          generateOperation(JPC, 0, 0, 0);
+        }
         | expression NEQ expression
+        {
+          generateOperation(OPR, 0, 0, 5);
+          generateOperation(JPC, 0, 0, 0);
+        }
         | expression LT expression
+        {
+          generateOperation(OPR, 0, 0, 10);
+          generateOperation(JPC, 0, 0, 0);
+        }
         | expression LE expression
+        {
+          generateOperation(OPR, 0, 0, 9);
+          generateOperation(JPC, 0, 0, 0);
+        }
         | expression GT expression
+        {
+          generateOperation(OPR, 0, 0, 8);
+          generateOperation(JPC, 0, 0, 0);
+        }
         | expression GE expression
+        {
+          generateOperation(OPR, 0, 0, 7);
+          generateOperation(JPC, 0, 0, 0);
+        }
         ;
 
 expression
@@ -237,7 +280,8 @@ var_name
         {
           tableItem *item;
           item = searchItem($1);
-          generateOperation(LOD, 0, 0, item -> addr);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(LOD, base, 0, item -> addr);
         }
         ;
 
