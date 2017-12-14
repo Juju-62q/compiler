@@ -13,6 +13,7 @@ extern int yylineno;
 extern char* yytext;
 static enum kindOfItem kind = global;
 static int procFlag = 1;
+static char* forLoopVar;
 
 %}
 
@@ -176,16 +177,50 @@ set_while_loop
         }
 
 for_statement
-        : FOR IDENT ASSIGN expression TO expression DO statement
+        : for_initial for_loop statement
         {
+          tableItem *item = searchItem(forLoopVar);
+          REG base = item -> kind == local ? 1 : 0;
+
+          //increment
+          generateOperation(LOD, base, 0, item -> addr);
+          generateOperation(LIT, 0, 0, 1);
+          generateOperation(OPR, 0, 0, 1);
+          generateOperation(STO, base, 0, item -> addr);
+
+          // set up loop
+          setUndefinedAddress(getOpCount() + 1);
+          generateOperation(JMP, 0, 0, 0);
+          setUndefinedAddress(getLoopPoint());
+          free(forLoopVar);
+        }
+        ;
+
+for_initial
+        : FOR IDENT ASSIGN expression
+        {
+          //initiallize
           tableItem *item;
           item = searchItem($2);
           REG base = item -> kind == local ? 1 : 0;
-          //setLoop
-          //generateOperation(LOD, 0, 0, item -> address);
-          //generateOperation(STO, base, 0, item -> address);
+          generateOperation(STO, base, 0, item -> addr);
+          setLoopPoint();
+
+          forLoopVar = (char*)malloc(strlen($2));
+          sprintf(forLoopVar, "%s", $2);
         }
-        ;
+
+for_loop
+        : TO expression DO
+        {
+          tableItem *item = searchItem(forLoopVar);
+          REG base = item -> kind == local ? 1 : 0;
+
+          //check loop condition
+          generateOperation(LOD, base, 0, item -> addr);
+          generateOperation(OPR, 0, 0, 10);
+          generateOperation(JPC, 0, 0, 0);
+        }
 
 proc_call_statement
         : proc_call_name
