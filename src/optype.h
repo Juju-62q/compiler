@@ -34,7 +34,7 @@ struct undefinedOp{
 typedef struct undefinedOp undefinedOp;
 
 struct loopPoint{
-  REG *loopPoint;
+  REG loopPoint;
   struct loopPoint *prev;
 };
 

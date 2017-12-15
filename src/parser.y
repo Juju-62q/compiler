@@ -145,7 +145,7 @@ if_statement
 set_address_if
         : 
         {
-          setUndefinedAddress(getOpCount());
+          setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
         }
           

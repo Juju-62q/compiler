@@ -78,7 +78,7 @@ REG getStartPoint(){
 void setLoopPoint(){
   loopPoint *newLoopPoint = (loopPoint*)malloc(sizeof(loopPoint));
   newLoopPoint -> prev = loopPointList;
-  newLoopPoint -> loopPoint = opCount;
+  newLoopPoint -> loopPoint = (REG)opCount;
   loopPointList = newLoopPoint;
 }
 
