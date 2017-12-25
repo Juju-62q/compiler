@@ -14,6 +14,7 @@ extern char* yytext;
 static enum kindOfItem kind = global;
 static int procFlag = 1;
 static char* forLoopVar;
+static int procVariableNum = 0;
 
 %}
 
@@ -37,6 +38,9 @@ static char* forLoopVar;
 %token <num> NUMBER
 %token <ident> IDENT
 
+%type <ident> proc_call_name
+%type <num> add_stack
+%type <num> proc_call_statement
 %%
 
 program
@@ -85,8 +89,21 @@ proc_decl
         {
           kind = global;
           removeLocalVariable();
-          printf("removeing Items\n");
+          printf("removing Items\n");
           printAllItems();
+          generateOperation(RTN, 0, 0, 0);
+        }
+        | PROCEDURE proc_name LPAREN proc_var_list RPAREN SEMICOLON inblock
+        {
+        }
+        ;
+
+proc_var_list
+        : IDENT
+        {
+        }
+        | proc_var_list COMMA IDENT
+        {
         }
         ;
 
@@ -106,9 +123,6 @@ proc_name
 
 inblock
         : var_decl_part statement
-        {
-          generateOperation(RTN, 0, 0, 0);
-        }
         ;
 
 statement_list
@@ -148,6 +162,7 @@ set_address_if
           setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
         }
+        ;
           
 else_statement
         : ELSE statement
@@ -159,6 +174,7 @@ set_address_else
         {
           setUndefinedAddress(getOpCount());
         }
+        ;
 
 
 while_statement
@@ -175,6 +191,7 @@ set_while_loop
         {
           setLoopPoint();
         }
+        ;
 
 for_statement
         : for_initial for_loop statement
@@ -209,6 +226,7 @@ for_initial
           forLoopVar = (char*)malloc(strlen($2));
           sprintf(forLoopVar, "%s", $2);
         }
+        ;
 
 for_loop
         : TO expression DO
@@ -221,9 +239,21 @@ for_loop
           generateOperation(OPR, 0, 0, 10);
           generateOperation(JPC, 0, 0, 0);
         }
+        ;
 
 proc_call_statement
         : proc_call_name
+        {
+        }
+        | proc_call_name add_stack LPAREN arg_list RPAREN
+        {
+        }
+        ;
+
+add_stack
+        :
+        {
+        }
         ;
 
 proc_call_name
