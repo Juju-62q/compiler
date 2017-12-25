@@ -14,7 +14,6 @@ extern char* yytext;
 static enum kindOfItem kind = global;
 static int procFlag = 1;
 static char* forLoopVar;
-static int procVariableNum = 0;
 
 %}
 
@@ -37,10 +36,6 @@ static int procVariableNum = 0;
 %token PERIOD ASSIGN
 %token <num> NUMBER
 %token <ident> IDENT
-
-%type <ident> proc_call_name
-%type <num> add_stack
-%type <num> proc_call_statement
 
 %%
 
@@ -77,7 +72,7 @@ subprog_decl_part
         ;
 
 subprog_decl_list
-        :  subprog_decl_list SEMICOLON subprog_decl
+        : subprog_decl_list SEMICOLON subprog_decl
         | subprog_decl
         ;
 
@@ -92,34 +87,6 @@ proc_decl
           removeLocalVariable();
           printf("removeing Items\n");
           printAllItems();
-          generateOperation(RTN, 0, 0, 0);
-        }
-        | PROCEDURE proc_name LPAREN proc_var_list RPAREN SEMICOLON inblock
-        {
-          kind = global;
-          removeLocalVariable();
-          printf("removeing Items\n");
-          printAllItems();
-          generateOperation(INT, 0, 0, - procVariableNum);
-          generateOperation(RTN, 0, 0, 0);
-          procVariableNum = 0;
-        }
-        ;
-
-proc_var_list
-        : IDENT
-        {
-          addItemToStack($1,local);
-          printf("variable declaration\n");
-          printAllItems();
-          ++procVariableNum;
-        }
-        | proc_var_list COMMA IDENT
-        {
-          addItemToStack($3,local);
-          printf("variable declaration\n");
-          printAllItems();
-          ++procVariableNum;
         }
         ;
 
@@ -139,6 +106,9 @@ proc_name
 
 inblock
         : var_decl_part statement
+        {
+          generateOperation(RTN, 0, 0, 0);
+        }
         ;
 
 statement_list
@@ -193,14 +163,12 @@ set_address_else
 
 while_statement
         : WHILE set_while_loop condition DO statement
-
         {
           setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
           setUndefinedAddress(getLoopPoint());
         }
-  
-      ;
+        ;
 
 set_while_loop
         :
@@ -256,35 +224,14 @@ for_loop
 
 proc_call_statement
         : proc_call_name
-        {
-          tableItem *item;
-          item = searchItem($1);
-          generateOperation(CAL, 0, 0, item -> addr);
-        }
-        | add_stack proc_call_name LPAREN arg_list RPAREN
-        {
-          tableItem *item;
-          item = searchItem($2);
-          generateOperation(INT, 0, 0, -4 - (getOpCount() - $1));
-          generateOperation(CAL, 0, 0, item -> addr);
-          generateOperation(INT, 0, 0, $1 - getOpCount());
-        }
-        ;
-
-add_stack
-        :
-        {
-          generateOperation(INT, 0, 0, 4);
-          $$ = getOpCount();
-        }
         ;
 
 proc_call_name
         : IDENT
         {
-          printf("testing \n\n\n\n");
-          printf("%s\n",$1);
-          //$$ = $1;
+          tableItem *item;
+          item = searchItem($1);
+          generateOperation(CAL, 0, 0, item -> addr);
         }
         ;
 
