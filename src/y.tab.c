@@ -525,14 +525,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    47,    47,    56,    59,    61,    65,    66,    70,    74,
-      75,    79,    80,    84,    88,    96,   102,   105,   111,   125,
-     129,   130,   134,   135,   136,   137,   138,   139,   140,   141,
-     142,   146,   156,   161,   168,   169,   174,   181,   191,   197,
-     217,   232,   245,   248,   255,   260,   269,   273,   284,   290,
-     295,   300,   305,   310,   315,   320,   328,   329,   330,   334,
-     338,   345,   346,   350,   357,   358,   362,   366,   376,   377,
-     381,   388
+       0,    46,    46,    55,    58,    60,    64,    65,    69,    73,
+      74,    78,    79,    83,    87,    95,   108,   115,   125,   139,
+     143,   144,   148,   149,   150,   151,   152,   153,   154,   155,
+     156,   160,   170,   175,   182,   183,   188,   195,   205,   211,
+     231,   246,   259,   267,   277,   283,   290,   294,   305,   311,
+     316,   321,   326,   331,   336,   341,   349,   350,   351,   355,
+     359,   366,   367,   371,   378,   379,   383,   387,   397,   401,
+     408,   415
 };
 #endif
 
@@ -610,7 +610,7 @@ static const yytype_uint8 yydefact[] =
        0,     0,     0,     0,     1,     4,     0,     0,    10,     0,
        7,    70,     8,     2,     0,    49,     0,    12,    13,     5,
        0,    18,     0,    49,     0,     0,     0,    38,     0,    45,
-       3,    22,    23,    24,    25,     0,    26,    42,    28,    29,
+       3,    22,    23,    24,    25,     0,    26,    43,    28,    29,
       30,    27,     9,     6,    71,     0,     4,     0,    21,     0,
        0,     0,     0,    65,    67,     0,     0,    56,    61,    64,
        0,     0,     0,     0,     0,    49,     0,    11,    16,     0,
@@ -619,7 +619,7 @@ static const yytype_uint8 yydefact[] =
        0,     0,    31,     0,    39,     0,     0,     0,    19,    20,
       40,    66,    33,    59,    60,    50,    51,    53,    52,    55,
       54,    62,    63,    47,    49,    48,    41,    68,     0,     4,
-      17,    35,    37,    43,     0,    15,    49,    36,    69,    34,
+      17,    35,    37,    42,     0,    15,    49,    36,    69,    34,
       32
 };
 
@@ -716,7 +716,7 @@ static const yytype_uint8 yyr2[] =
        0,     3,     1,     1,     4,     7,     1,     3,     1,     2,
        3,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     3,     7,     0,     2,     0,     0,     5,     0,     3,
-       4,     3,     1,     5,     0,     1,     3,     4,     4,     0,
+       4,     3,     5,     1,     0,     1,     3,     4,     4,     0,
        3,     3,     3,     3,     3,     3,     1,     2,     2,     3,
        3,     1,     3,     3,     1,     1,     3,     1,     1,     3,
        1,     3
@@ -1396,7 +1396,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 48 "parser.y" /* yacc.c:1646  */
+#line 47 "parser.y" /* yacc.c:1646  */
     {
           if(!procFlag) setUndefinedAddress(getStartPoint());
           printf("program end\n");
@@ -1406,7 +1406,7 @@ yyreduce:
     break;
 
   case 14:
-#line 89 "parser.y" /* yacc.c:1646  */
+#line 88 "parser.y" /* yacc.c:1646  */
     {
           kind = global;
           removeLocalVariable();
@@ -1418,28 +1418,43 @@ yyreduce:
     break;
 
   case 15:
-#line 97 "parser.y" /* yacc.c:1646  */
+#line 96 "parser.y" /* yacc.c:1646  */
     {
-        }
-#line 1425 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 16:
-#line 103 "parser.y" /* yacc.c:1646  */
-    {
+          kind = global;
+          removeLocalVariable();
+          printf("removing Items\n");
+          printAllItems();
+          generateOperation(INT, 0, 0, - procVariableNum);
+          generateOperation(RTN, 0, 0, 0);
+          procVariableNum = 0;
         }
 #line 1432 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 17:
-#line 106 "parser.y" /* yacc.c:1646  */
+  case 16:
+#line 109 "parser.y" /* yacc.c:1646  */
     {
+          addItemToStack((yyvsp[0].ident), local);
+          printf("variable declaration\n");
+          printAllItems();
+          ++procVariableNum;
         }
-#line 1439 "y.tab.c" /* yacc.c:1646  */
+#line 1443 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 116 "parser.y" /* yacc.c:1646  */
+    {
+          addItemToStack((yyvsp[0].ident), local);
+          printf("variable declaration\n");
+          printAllItems();
+          ++procVariableNum;
+        }
+#line 1454 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 112 "parser.y" /* yacc.c:1646  */
+#line 126 "parser.y" /* yacc.c:1646  */
     {
           kind = local;
           addItemToStack((yyvsp[0].ident),func);
@@ -1450,57 +1465,57 @@ yyreduce:
             generateOperation(JMP,0,0,0);
           }
         }
-#line 1454 "y.tab.c" /* yacc.c:1646  */
+#line 1469 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 147 "parser.y" /* yacc.c:1646  */
+#line 161 "parser.y" /* yacc.c:1646  */
     {
           tableItem *item;
           item = searchItem((yyvsp[-2].ident));
           REG base = item -> kind == local ? 1 : 0;
           generateOperation(STO, base, 0, item -> addr);
         }
-#line 1465 "y.tab.c" /* yacc.c:1646  */
+#line 1480 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 161 "parser.y" /* yacc.c:1646  */
+#line 175 "parser.y" /* yacc.c:1646  */
     {
           setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
         }
-#line 1474 "y.tab.c" /* yacc.c:1646  */
+#line 1489 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 174 "parser.y" /* yacc.c:1646  */
+#line 188 "parser.y" /* yacc.c:1646  */
     {
           setUndefinedAddress(getOpCount());
         }
-#line 1482 "y.tab.c" /* yacc.c:1646  */
+#line 1497 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 182 "parser.y" /* yacc.c:1646  */
+#line 196 "parser.y" /* yacc.c:1646  */
     {
           setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
           setUndefinedAddress(getLoopPoint());
         }
-#line 1492 "y.tab.c" /* yacc.c:1646  */
+#line 1507 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 191 "parser.y" /* yacc.c:1646  */
+#line 205 "parser.y" /* yacc.c:1646  */
     {
           setLoopPoint();
         }
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 1515 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 198 "parser.y" /* yacc.c:1646  */
+#line 212 "parser.y" /* yacc.c:1646  */
     {
           tableItem *item = searchItem(forLoopVar);
           REG base = item -> kind == local ? 1 : 0;
@@ -1517,11 +1532,11 @@ yyreduce:
           setUndefinedAddress(getLoopPoint());
           free(forLoopVar);
         }
-#line 1521 "y.tab.c" /* yacc.c:1646  */
+#line 1536 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 218 "parser.y" /* yacc.c:1646  */
+#line 232 "parser.y" /* yacc.c:1646  */
     {
           //initiallize
           tableItem *item;
@@ -1533,11 +1548,11 @@ yyreduce:
           forLoopVar = (char*)malloc(strlen((yyvsp[-2].ident)));
           sprintf(forLoopVar, "%s", (yyvsp[-2].ident));
         }
-#line 1537 "y.tab.c" /* yacc.c:1646  */
+#line 1552 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 233 "parser.y" /* yacc.c:1646  */
+#line 247 "parser.y" /* yacc.c:1646  */
     {
           tableItem *item = searchItem(forLoopVar);
           REG base = item -> kind == local ? 1 : 0;
@@ -1547,42 +1562,49 @@ yyreduce:
           generateOperation(OPR, 0, 0, 10);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1551 "y.tab.c" /* yacc.c:1646  */
+#line 1566 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 246 "parser.y" /* yacc.c:1646  */
+#line 260 "parser.y" /* yacc.c:1646  */
     {
+          tableItem *item;
+          item = searchItem((yyvsp[-4].ident));
+          generateOperation(INT, 0, 0, -4 - procVariableNum);
+          generateOperation(CAL, 0, 0, item -> addr);
+          generateOperation(INT, 0, 0, procVariableNum);
         }
-#line 1558 "y.tab.c" /* yacc.c:1646  */
+#line 1578 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 249 "parser.y" /* yacc.c:1646  */
-    {
-        }
-#line 1565 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 44:
-#line 255 "parser.y" /* yacc.c:1646  */
-    {
-        }
-#line 1572 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 45:
-#line 261 "parser.y" /* yacc.c:1646  */
+#line 268 "parser.y" /* yacc.c:1646  */
     {
           tableItem *item;
           item = searchItem((yyvsp[0].ident));
           generateOperation(CAL, 0, 0, item -> addr);
         }
-#line 1582 "y.tab.c" /* yacc.c:1646  */
+#line 1588 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 277 "parser.y" /* yacc.c:1646  */
+    {
+          generateOperation(INT, 0, 0, -4);
+        }
+#line 1596 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 45:
+#line 284 "parser.y" /* yacc.c:1646  */
+    {
+          strcpy((yyval.ident), (yyvsp[0].ident));
+        }
+#line 1604 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 274 "parser.y" /* yacc.c:1646  */
+#line 295 "parser.y" /* yacc.c:1646  */
     {
           tableItem *item;
           item = searchItem((yyvsp[-1].ident));
@@ -1590,154 +1612,170 @@ yyreduce:
           generateOperation(GET, 0, 0, 0);
           generateOperation(STO, base, 0, item -> addr);
         }
-#line 1594 "y.tab.c" /* yacc.c:1646  */
+#line 1616 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 285 "parser.y" /* yacc.c:1646  */
+#line 306 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(PUT, 0, 0, 0);
         }
-#line 1602 "y.tab.c" /* yacc.c:1646  */
+#line 1624 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 296 "parser.y" /* yacc.c:1646  */
+#line 317 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 5);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1611 "y.tab.c" /* yacc.c:1646  */
+#line 1633 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 301 "parser.y" /* yacc.c:1646  */
+#line 322 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 6);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1620 "y.tab.c" /* yacc.c:1646  */
+#line 1642 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 306 "parser.y" /* yacc.c:1646  */
+#line 327 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 7);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1629 "y.tab.c" /* yacc.c:1646  */
+#line 1651 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 311 "parser.y" /* yacc.c:1646  */
+#line 332 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 8);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1638 "y.tab.c" /* yacc.c:1646  */
+#line 1660 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 316 "parser.y" /* yacc.c:1646  */
+#line 337 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 9);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1647 "y.tab.c" /* yacc.c:1646  */
+#line 1669 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 321 "parser.y" /* yacc.c:1646  */
+#line 342 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 10);
           generateOperation(JPC, 0, 0, 0);
         }
-#line 1656 "y.tab.c" /* yacc.c:1646  */
+#line 1678 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 331 "parser.y" /* yacc.c:1646  */
+#line 352 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 0);
         }
-#line 1664 "y.tab.c" /* yacc.c:1646  */
+#line 1686 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 335 "parser.y" /* yacc.c:1646  */
+#line 356 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 1);
         }
-#line 1672 "y.tab.c" /* yacc.c:1646  */
+#line 1694 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 339 "parser.y" /* yacc.c:1646  */
+#line 360 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0, 0, 2);
         }
-#line 1680 "y.tab.c" /* yacc.c:1646  */
+#line 1702 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 347 "parser.y" /* yacc.c:1646  */
+#line 368 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0 ,0 ,3);
         }
-#line 1688 "y.tab.c" /* yacc.c:1646  */
+#line 1710 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 351 "parser.y" /* yacc.c:1646  */
+#line 372 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(OPR, 0 ,0 ,4);
         }
-#line 1696 "y.tab.c" /* yacc.c:1646  */
+#line 1718 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 359 "parser.y" /* yacc.c:1646  */
+#line 380 "parser.y" /* yacc.c:1646  */
     {
           generateOperation(LIT,0,0,(yyvsp[0].num));
         }
-#line 1704 "y.tab.c" /* yacc.c:1646  */
+#line 1726 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 367 "parser.y" /* yacc.c:1646  */
+#line 388 "parser.y" /* yacc.c:1646  */
     {
           tableItem *item;
           item = searchItem((yyvsp[0].ident));
           REG base = item -> kind == local ? 1 : 0;
           generateOperation(LOD, base, 0, item -> addr);
         }
-#line 1715 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 70:
-#line 382 "parser.y" /* yacc.c:1646  */
-    {
-          addItemToStack((yyvsp[0].ident),kind);
-          printf("variable declaration\n");
-          printAllItems();
-          generateOperation(LIT,0,0,0);
-        }
-#line 1726 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 389 "parser.y" /* yacc.c:1646  */
-    {
-          addItemToStack((yyvsp[0].ident),kind);
-          printf("variable declaration\n");
-          printAllItems();
-          generateOperation(LIT,0,0,0);
-        }
 #line 1737 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 68:
+#line 398 "parser.y" /* yacc.c:1646  */
+    {
+          ++procVariableNum;
+        }
+#line 1745 "y.tab.c" /* yacc.c:1646  */
+    break;
 
-#line 1741 "y.tab.c" /* yacc.c:1646  */
+  case 69:
+#line 402 "parser.y" /* yacc.c:1646  */
+    {
+          ++procVariableNum;
+        }
+#line 1753 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 409 "parser.y" /* yacc.c:1646  */
+    {
+          addItemToStack((yyvsp[0].ident),kind);
+          printf("variable declaration\n");
+          printAllItems();
+          generateOperation(LIT,0,0,0);
+        }
+#line 1764 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 416 "parser.y" /* yacc.c:1646  */
+    {
+          addItemToStack((yyvsp[0].ident),kind);
+          printf("variable declaration\n");
+          printAllItems();
+          generateOperation(LIT,0,0,0);
+        }
+#line 1775 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+
+#line 1779 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1965,7 +2003,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 397 "parser.y" /* yacc.c:1906  */
+#line 424 "parser.y" /* yacc.c:1906  */
  
 yyerror(char *s)
 {
