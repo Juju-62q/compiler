@@ -92,7 +92,7 @@ proc_decl
           printAllItems();
           generateOperation(RTN, 0, 0, 0);
         }
-        | PROCEDURE proc_name LPAREN proc_var_list RPAREN SEMICOLON inblock
+        | PROCEDURE proc_name LPAREN proc_variables RPAREN SEMICOLON inblock
         {
           kind = global;
           removeLocalVariable();
@@ -103,6 +103,12 @@ proc_decl
           procVariableNum = 0;
         }
         ;
+
+proc_variables
+        : proc_var_list
+        {
+          generateOperation(INT, 0, 0, procVariableNum);
+        }
 
 proc_var_list
         : IDENT
@@ -262,7 +268,6 @@ proc_call_statement
           item = searchItem($1);
           generateOperation(INT, 0, 0, -4 - procVariableNum);
           generateOperation(CAL, 0, 0, item -> addr);
-          generateOperation(INT, 0, 0, procVariableNum);
         }
         | proc_call_name
         {
@@ -275,7 +280,8 @@ proc_call_statement
 add_stack
         :
         {
-          generateOperation(INT, 0, 0, -4);
+          procVariableNum = 0;
+          generateOperation(INT, 0, 0, 4);
         }
         ;
 
