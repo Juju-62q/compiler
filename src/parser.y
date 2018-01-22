@@ -81,6 +81,7 @@ subprog_decl_list
 
 subprog_decl
         : proc_decl
+        | function_decl
         ;
 
 proc_decl 
@@ -93,6 +94,27 @@ proc_decl
           generateOperation(RTN, 0, 0, 0);
         }
         | PROCEDURE proc_name LPAREN proc_variables RPAREN SEMICOLON inblock
+        {
+          kind = global;
+          removeLocalVariable();
+          printf("removing Items\n");
+          printAllItems();
+          generateOperation(INT, 0, 0, - procVariableNum);
+          generateOperation(RTN, 0, 0, 0);
+          procVariableNum = 0;
+        }
+        ;
+
+function_decl 
+        : FUNCTION proc_name SEMICOLON inblock
+        {
+          kind = global;
+          removeLocalVariable();
+          printf("removing Items\n");
+          printAllItems();
+          generateOperation(RTN, 0, 0, 0);
+        }
+        | FUNCTION proc_name LPAREN proc_variables RPAREN SEMICOLON inblock
         {
           kind = global;
           removeLocalVariable();
@@ -167,8 +189,12 @@ assignment_statement
         {
           tableItem *item;
           item = searchItem($1);
-          REG base = item -> kind == local ? 1 : 0;
-          generateOperation(STO, base, 0, item -> addr);
+          if (item -> kind == func){
+            generateOperation(STO, 1, 0, -5);
+          }else{
+            REG base = item -> kind == local ? 1 : 0;
+            generateOperation(STO, base, 0, item -> addr);
+          }
         }
         ;
 
@@ -262,7 +288,7 @@ for_loop
         ;
 
 proc_call_statement
-        : proc_call_name add_stack LPAREN arg_list RPAREN
+        : proc_call_name add_stack_proc LPAREN arg_list RPAREN
         {
           tableItem *item;
           item = searchItem($1);
@@ -277,7 +303,7 @@ proc_call_statement
         }
         ;
 
-add_stack
+add_stack_proc
         :
         {
           procVariableNum = 0;
@@ -381,21 +407,41 @@ term
         ;
 
 factor
-        : var_name
+        : var_or_function
         | NUMBER
         {
           generateOperation(LIT,0,0,$1);
         }
         | LPAREN expression RPAREN
+         | proc_call_name add_stack_func LPAREN arg_list RPAREN
+        {
+          tableItem *item;
+          item = searchItem($1);
+          generateOperation(INT, 0, 0, -4 - procVariableNum);
+          generateOperation(CAL, 0, 0, item -> addr);
+        }        
         ;
 
-var_name
+add_stack_func
+        :
+        {
+          procVariableNum = 0;
+          generateOperation(INT, 0, 0, 5);
+        }
+        ;
+
+var_or_function
         : IDENT
         {
           tableItem *item;
           item = searchItem($1);
-          REG base = item -> kind == local ? 1 : 0;
-          generateOperation(LOD, base, 0, item -> addr);
+          if(item -> kind == func){
+            generateOperation(INT, 0, 0, 1);
+            generateOperation(CAL, 0, 0, item -> addr);
+          }else{
+            REG base = item -> kind == local ? 1 : 0;
+            generateOperation(LOD, base, 0, item -> addr);
+          }
         }
         ;
 
