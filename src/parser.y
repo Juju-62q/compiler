@@ -40,6 +40,7 @@ static int procVariableNum = 0;
 
 %type <ident> proc_call_name
 %type <num> proc_call_statement
+%type <ident> array_assign
 %%
 
 program
@@ -135,14 +136,14 @@ proc_variables
 proc_var_list
         : IDENT
         {
-          addItemToStack($1, local);
+          addItemToStack($1, local , 0);
           printf("variable declaration\n");
           printAllItems();
           ++procVariableNum;
         }
         | proc_var_list COMMA IDENT
         {
-          addItemToStack($3, local);
+          addItemToStack($3, local, 0);
           printf("variable declaration\n");
           printAllItems();
           ++procVariableNum;
@@ -153,7 +154,7 @@ proc_name
         : IDENT
         {
           kind = local;
-          addItemToStack($1,func);
+          addItemToStack($1, func, 0);
           printf("procedure declaration\n");
           printAllItems();
           if(procFlag){
@@ -196,7 +197,25 @@ assignment_statement
             generateOperation(STO, base, 0, item -> addr);
           }
         }
+        | array_assign ASSIGN expression
+        {
+          tableItem *item;
+          item = searchItem($1);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(STO, base, 3, item -> addr);
+        }
         ;
+
+array_assign
+        : IDENT LBRACKET expression RBRACKET
+        {
+          strcpy($$, $1);
+          tableItem *item;
+          item = searchItem($1);
+          generateOperation(LIT, 0, 0, item -> arrayTop);
+          generateOperation(OPR, 0, 0, 2);
+          generateOperation(MVX, 0, 3, 0);
+        }
 
 if_statement
         : IF condition THEN statement set_address_if else_statement set_address_else
@@ -229,6 +248,7 @@ while_statement
           setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
           setUndefinedAddress(getLoopPoint());
+          printf("debugging\n");
         }
         ;
 
@@ -331,6 +351,17 @@ read_statement
           generateOperation(GET, 0, 0, 0);
           generateOperation(STO, base, 0, item -> addr);
         }
+        | READ LPAREN IDENT LBRACKET expression RBRACKET RPAREN
+        {
+          tableItem *item;
+          item = searchItem($3);
+          generateOperation(LIT, 0, 0, item -> arrayTop);
+          generateOperation(OPR, 0, 0, 2);
+          generateOperation(MVX, 0, 3, 0);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(GET, 0, 0, 0);
+          generateOperation(STO, base, 0, item -> addr);
+        }
         ;
 
 write_statement
@@ -408,6 +439,7 @@ term
 
 factor
         : var_or_function
+        | var_array
         | NUMBER
         {
           generateOperation(LIT,0,0,$1);
@@ -445,6 +477,19 @@ var_or_function
         }
         ;
 
+var_array
+        : IDENT LBRACKET expression RBRACKET
+        {
+          tableItem *item;
+          item = searchItem($1);
+          generateOperation(LIT, 0, 0, item -> arrayTop);
+          generateOperation(OPR, 0, 0, 2);
+          generateOperation(MVX, 0, 4, 0);
+          REG base = item -> kind == local ? 1 : 0;
+          generateOperation(LOD, base, 4, item -> addr); 
+        }
+        ;
+
 arg_list
         : expression
         {
@@ -459,17 +504,35 @@ arg_list
 id_list
         : IDENT
         {
-          addItemToStack($1,kind);
+          addItemToStack($1, kind, 0);
           printf("variable declaration\n");
           printAllItems();
           generateOperation(LIT,0,0,0);
         }
         | id_list COMMA IDENT
         {
-          addItemToStack($3,kind);
+          addItemToStack($3, kind, 0);
           printf("variable declaration\n");
           printAllItems();
           generateOperation(LIT,0,0,0);
+        }
+        | IDENT LBRACKET NUMBER INTERVAL NUMBER RBRACKET
+        {
+          addItemToStack($1, kind, $3);
+          printf("variable declaration\n");
+          printAllItems();
+          int i;
+          for( i = $3; i < $5; ++i)
+            generateOperation(LIT,0,0,0);
+        }
+        | id_list COMMA IDENT LBRACKET NUMBER INTERVAL NUMBER RBRACKET
+        {
+          addItemToStack($3, kind, $5);
+          printf("variable declaration\n");
+          printAllItems();
+          int i;
+          for( i = $5; i < $7; ++i)
+            generateOperation(LIT,0,0,0);
         }
         ;
 

@@ -43,7 +43,7 @@ static char* getKindString(enum kindOfItem kind){
   }
 }
 
-void addItemToStack(char *name, enum kindOfItem kind){
+void addItemToStack(char *name, enum kindOfItem kind, unsigned int arrayTop){
 
   /*set information about new item*/
   tableItem *newItem;
@@ -57,6 +57,7 @@ void addItemToStack(char *name, enum kindOfItem kind){
     newItem -> addr = (kind == local)? localNum++ : globalNum++;
   }
   newItem -> kind = kind;
+  newItem -> arrayTop = arrayTop;
   newItem -> prev = stackPointer;
 
   /*set stackPointer*/
