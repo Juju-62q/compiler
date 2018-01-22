@@ -136,14 +136,14 @@ proc_variables
 proc_var_list
         : IDENT
         {
-          addItemToStack($1, local , 0);
+          addItemToStack($1, local , 0, 1);
           printf("variable declaration\n");
           printAllItems();
           ++procVariableNum;
         }
         | proc_var_list COMMA IDENT
         {
-          addItemToStack($3, local, 0);
+          addItemToStack($3, local, 0, 1);
           printf("variable declaration\n");
           printAllItems();
           ++procVariableNum;
@@ -154,13 +154,13 @@ proc_name
         : IDENT
         {
           kind = local;
-          addItemToStack($1, func, 0);
           printf("procedure declaration\n");
           printAllItems();
           if(procFlag){
             procFlag = 0;
             generateOperation(JMP,0,0,0);
           }
+          addItemToStack($1, func, 0, 0);
         }
         ;
 
@@ -248,7 +248,6 @@ while_statement
           setUndefinedAddress(getOpCount() + 1);
           generateOperation(JMP, 0, 0, 0);
           setUndefinedAddress(getLoopPoint());
-          printf("debugging\n");
         }
         ;
 
@@ -360,7 +359,7 @@ read_statement
           generateOperation(MVX, 0, 3, 0);
           REG base = item -> kind == local ? 1 : 0;
           generateOperation(GET, 0, 0, 0);
-          generateOperation(STO, base, 0, item -> addr);
+          generateOperation(STO, base, 3, item -> addr);
         }
         ;
 
@@ -504,21 +503,21 @@ arg_list
 id_list
         : IDENT
         {
-          addItemToStack($1, kind, 0);
+          addItemToStack($1, kind, 0, 1);
           printf("variable declaration\n");
           printAllItems();
           generateOperation(LIT,0,0,0);
         }
         | id_list COMMA IDENT
         {
-          addItemToStack($3, kind, 0);
+          addItemToStack($3, kind, 0, 1);
           printf("variable declaration\n");
           printAllItems();
           generateOperation(LIT,0,0,0);
         }
         | IDENT LBRACKET NUMBER INTERVAL NUMBER RBRACKET
         {
-          addItemToStack($1, kind, $3);
+          addItemToStack($1, kind, $3, $5 - $3);
           printf("variable declaration\n");
           printAllItems();
           int i;
@@ -527,7 +526,7 @@ id_list
         }
         | id_list COMMA IDENT LBRACKET NUMBER INTERVAL NUMBER RBRACKET
         {
-          addItemToStack($3, kind, $5);
+          addItemToStack($3, kind, $5, $7 - $5);
           printf("variable declaration\n");
           printAllItems();
           int i;

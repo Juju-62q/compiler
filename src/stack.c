@@ -43,7 +43,7 @@ static char* getKindString(enum kindOfItem kind){
   }
 }
 
-void addItemToStack(char *name, enum kindOfItem kind, unsigned int arrayTop){
+void addItemToStack(char *name, enum kindOfItem kind, unsigned int arrayTop, unsigned int size){
 
   /*set information about new item*/
   tableItem *newItem;
@@ -52,9 +52,15 @@ void addItemToStack(char *name, enum kindOfItem kind, unsigned int arrayTop){
   sprintf(newItem -> name, "%s", name);
   if(kind == func){
     localNum = 0;
-    newItem -> addr = getOpCount() + 1;
-  }else{    
-    newItem -> addr = (kind == local)? localNum++ : globalNum++;
+    newItem -> addr = getOpCount();
+  }else{
+    if(kind == local){
+      newItem -> addr = localNum;
+      localNum += size;
+    }else{
+      newItem -> addr = globalNum;
+      globalNum += size;
+    }    
   }
   newItem -> kind = kind;
   newItem -> arrayTop = arrayTop;

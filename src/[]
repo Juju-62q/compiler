@@ -87,12 +87,12 @@ void setLoopPoint(){
 }
 
 REG getLoopPoint(){
-  loopPoint* i;
-  for(i = loopPointList; i != NULL; i = i -> prev) printf("%d ",i -> loopPoint);
+  unsigned int i;
+  for(i = loopPointList; i != null; i = i -> prev) printf("%d ",i -> loopPoint);
   printf("\n");
   REG retLoopPoint = loopPointList -> loopPoint;
   loopPoint *deleteLoopPoint = loopPointList;
   loopPointList = loopPointList -> prev;
-  free(deleteLoopPoint);
+  free(loopPointList);
   return retLoopPoint;
 }
