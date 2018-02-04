@@ -45,16 +45,25 @@ static int forwardingFlag = func;
 %%
 
 program
-        : PROGRAM IDENT SEMICOLON outblock PERIOD
+        : PROGRAM IDENT SEMICOLON outblock set_start_point subprog_decl_part
         {
-          if(!procFlag) setUndefinedAddress(getStartPoint());
+          setUndefinedAddress(getOpCount());
           printf("program end\n");
           printAllItems();
         }
         ;
 
+set_start_point
+        : PERIOD
+        {
+          if(!procFlag) setUndefinedAddress(getStartPoint());
+          generateOperation(JMP,0,0,0);
+          procFlag = 0;
+        }
+        ;
+
 outblock
-        : var_decl_part subprog_decl_part statement subprog_decl_part
+        : var_decl_part subprog_decl_part statement
         ;
 
 var_decl_part
