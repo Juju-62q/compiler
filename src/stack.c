@@ -105,6 +105,7 @@ tableItem* searchItem(char *name){
 }
 
 void setFunctionAddress(tableItem* item){
+  setForwardedCall(item -> addr, getOpCount());
   item -> addr = getOpCount();
   return;
 }

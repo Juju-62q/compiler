@@ -15,6 +15,9 @@ static loopPoint *loopPointList = NULL;
 
 static undefinedOp *undefinedOpList = NULL;
 
+static forwardedCall *forwardedCallList;
+static forwardedCall *forwardedCallListTail;
+
 int initializeOutputFile(){
   if((outputFile = fopen(OUTPUT_FILE, "wb")) == NULL)
     return -1;
@@ -24,6 +27,11 @@ int initializeOutputFile(){
   opListTail = sentinelOp;
 
   undefinedOpList = NULL;
+
+  forwardedCall *sentinentCall = (forwardedCall*)malloc(sizeof(forwardedCall));
+  sentinentCall -> next = NULL;
+  forwardedCallList = sentinentCall;
+  forwardedCallListTail = sentinentCall;
   return 0;
 }
 
@@ -53,7 +61,15 @@ void generateOperation(int opCode, REG baseReg, REG indexReg, int address ){
   }
 
   if(opCode == RTN){
-     startPoint = opCount;
+    startPoint = opCount;
+  }
+
+  if(opCode == CAL && address < 0){
+    forwardedCall *newForwardedCall = (forwardedCall*)malloc(sizeof(forwardedCall));
+    newForwardedCall -> next = NULL;
+    newForwardedCall -> callFromList = newOp;
+    forwardedCallListTail -> next = newForwardedCall;
+    forwardedCallListTail = newForwardedCall;
   }
 
   opListTail -> next = newOp;
@@ -95,4 +111,14 @@ REG getLoopPoint(){
   loopPointList = loopPointList -> prev;
   free(deleteLoopPoint);
   return retLoopPoint;
+}
+
+void setForwardedCall(int forwardedNum, unsigned int addr){
+  forwardedCall *iterate;
+  for(iterate = forwardedCallList -> next; iterate != NULL; iterate = iterate -> next){
+    if(iterate -> callFromList -> opCode.address == forwardedNum){
+      iterate -> callFromList -> opCode.address = addr;
+    }
+  }
+  return;
 }

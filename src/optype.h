@@ -33,6 +33,13 @@ struct undefinedOp{
 
 typedef struct undefinedOp undefinedOp;
 
+struct forwardedCall{
+  op *callFromList;
+  struct forwardedCall *next;
+};
+
+typedef struct forwardedCall forwardedCall;
+
 struct loopPoint{
   REG loopPoint;
   struct loopPoint *prev;
@@ -48,3 +55,4 @@ REG getOpCount();
 REG getStartPoint();
 void setLoopPoint();
 REG getLoopPoint();
+void setForwardedCall(int forwardedNum, unsigned int addr);

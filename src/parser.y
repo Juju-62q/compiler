@@ -54,7 +54,7 @@ program
         ;
 
 outblock
-        : var_decl_part subprog_decl_part statement
+        : var_decl_part subprog_decl_part statement subprog_decl_part
         ;
 
 var_decl_part
@@ -84,31 +84,23 @@ subprog_decl_list
 subprog_decl
         : proc_decl
         | function_decl
+        | forwarding_decl
         ;
 
-/*forwarding_proc
-        : forwarding PROCEDURE proc_name SEMICOLON
-        | forwarding PROCEDURE proc_name LPAREN proc_variables RPAREN SEMICOLON
-        | forwarding FUNCTION proc_name SEMICOLON 
-        | forwarding FUNCTION proc_name LPAREN proc_variables RPAREN SEMICOLON 
+forwarding_decl
+        : forwarding PROCEDURE proc_name
+        | forwarding PROCEDURE proc_name LPAREN proc_variables RPAREN
+        | forwarding FUNCTION proc_name
+        | forwarding FUNCTION proc_name LPAREN proc_variables RPAREN
         ;
 
 forwarding
         : FORWARD
         {
-          printf("aaaa\n");
           forwardingFlag = forward;
         }
         ;
-*/
-forward_test
-        : FORWARD PROCEDURE proc_name SEMICOLON
-        {
-          printf("aaaa\n");
-          forwardingFlag = forward;
-        }
-        ;
-        
+
 
 proc_decl 
         : PROCEDURE proc_name SEMICOLON inblock
@@ -186,11 +178,16 @@ proc_name
           kind = local;
           printf("procedure declaration\n");
           printAllItems();
-          if(procFlag){
+          if(procFlag && forwardingFlag == func){
             procFlag = 0;
             generateOperation(JMP,0,0,0);
           }
-          addItemToStack($1, func, forwardingFlag , 0);
+          tableItem *item;
+          item = searchItem($1);
+          if(item == NULL)
+            addItemToStack($1, forwardingFlag, 0, 0);
+          else
+            setFunctionAddress(item);
           forwardingFlag = func;
         }
         ;
