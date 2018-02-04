@@ -15,6 +15,7 @@ static enum kindOfItem kind = global;
 static int procFlag = 1;
 static char* forLoopVar;
 static int procVariableNum = 0;
+static int forwardingFlag = func;
 
 %}
 
@@ -85,6 +86,30 @@ subprog_decl
         | function_decl
         ;
 
+/*forwarding_proc
+        : forwarding PROCEDURE proc_name SEMICOLON
+        | forwarding PROCEDURE proc_name LPAREN proc_variables RPAREN SEMICOLON
+        | forwarding FUNCTION proc_name SEMICOLON 
+        | forwarding FUNCTION proc_name LPAREN proc_variables RPAREN SEMICOLON 
+        ;
+
+forwarding
+        : FORWARD
+        {
+          printf("aaaa\n");
+          forwardingFlag = forward;
+        }
+        ;
+*/
+forward_test
+        : FORWARD PROCEDURE proc_name SEMICOLON
+        {
+          printf("aaaa\n");
+          forwardingFlag = forward;
+        }
+        ;
+        
+
 proc_decl 
         : PROCEDURE proc_name SEMICOLON inblock
         {
@@ -129,24 +154,29 @@ function_decl
 
 proc_variables
         : proc_var_list
-        {
-          generateOperation(INT, 0, 0, procVariableNum);
+        { 
+          if(forwardingFlag != forward)
+            generateOperation(INT, 0, 0, procVariableNum);
         }
 
 proc_var_list
         : IDENT
         {
-          addItemToStack($1, local , 0, 1);
-          printf("variable declaration\n");
-          printAllItems();
-          ++procVariableNum;
+          if(forwardingFlag != forward){
+            addItemToStack($1, local , 0, 1);
+            printf("variable declaration\n");
+            printAllItems();
+            ++procVariableNum;
+          }
         }
         | proc_var_list COMMA IDENT
         {
-          addItemToStack($3, local, 0, 1);
-          printf("variable declaration\n");
-          printAllItems();
-          ++procVariableNum;
+          if(forwardingFlag != forward){
+            addItemToStack($3, local, 0, 1);
+            printf("variable declaration\n");
+            printAllItems();
+            ++procVariableNum;
+          }
         }
         ;
 
@@ -160,7 +190,8 @@ proc_name
             procFlag = 0;
             generateOperation(JMP,0,0,0);
           }
-          addItemToStack($1, func, 0, 0);
+          addItemToStack($1, func, forwardingFlag , 0);
+          forwardingFlag = func;
         }
         ;
 

@@ -9,6 +9,7 @@ enum kindOfItem{
   local,
   global,
   func,
+  forward,
   sentinel
 };
 
@@ -27,3 +28,4 @@ void printAllItems();
 void addItemToStack(char *name, enum kindOfItem kind, unsigned int arrayTop, unsigned int size);
 void removeLocalVariable();
 tableItem* searchItem(char *name);
+void setFunctionAddress(tableItem* item);

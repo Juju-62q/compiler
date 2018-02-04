@@ -8,6 +8,7 @@ static void removeItem();
 static tableItem *stackPointer;
 static int globalNum = 0;
 static int localNum = 0;
+static int forwardNum = 0;
 
 void initializeStack(){
 
@@ -51,8 +52,12 @@ void addItemToStack(char *name, enum kindOfItem kind, unsigned int arrayTop, uns
   newItem -> name = (char*)malloc(strlen(name));
   sprintf(newItem -> name, "%s", name);
   if(kind == func){
-    localNum = 0;
     newItem -> addr = getOpCount();
+    localNum = 0;
+  }else if(kind == forward){
+    newItem -> addr = --forwardNum;
+    localNum = 0;
+    kind = func;
   }else{
     if(kind == local){
       newItem -> addr = localNum;
@@ -97,4 +102,9 @@ tableItem* searchItem(char *name){
   }
   printf("lookup (%s) -> not found\n", name);
   return NULL;
+}
+
+void setFunctionAddress(tableItem* item){
+  item -> addr = getOpCount();
+  return;
 }
